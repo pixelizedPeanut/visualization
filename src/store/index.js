@@ -1,25 +1,24 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import Data from './data'
+import Data from './data'
 import Realms from './realm'
 import arrayStore from './array'
+import hc from 'highcharts'
 
 Vue.use(Vuex)
 
-// const PERCENTILES = []
-
 let realmsGenerator = new Realms()
-// let data = new Data()
+let data = new Data()
 
 let realms = arrayStore('realms')
-
-// let percentile = realms.array.reduce((ac, r) => {
-//   ac[r.realm] = arrayStore(r.realm)
-//   return ac
-// }, {})
+let percentiles = arrayStore('percentiles')
+let chart
 
 function setRealms (commit) {
-  return realmsGenerator.get().then(res => commit(realms.types.SET, res))
+  return realmsGenerator.get().then(res => {
+    commit(realms.types.SET, res)
+    return res
+  })
 }
 
 const actions = {
@@ -38,17 +37,53 @@ const actions = {
    * Request feeds and set the store
    * @return {Promise}
    */
-  setRealms ({ commit }) {
+  setRealms ({ commit, state }) {
     return setRealms(commit)
+  },
+
+  setPercentiles ({ commit, state }) {
+    return state.realms.array.map((r) => {
+      return data.get(r.realm).then(res => {
+        let newRecord = [{}]
+        if (res.chart[0]) {
+          newRecord[0].realm = r.realm
+          newRecord[0].label = r.label
+          newRecord[0].data = res.chart[0].data
+          commit(percentiles.types.ADD, newRecord)
+          if (chart) {
+            chart.addSeries({
+              name: r.label,
+              data: res.chart[0].data
+            })
+          }
+          return res
+        }
+      })
+    })
+  },
+
+  render ({ state }) {
+    let series = state.percentiles.array.map(i => {
+      return {
+        name: i.label,
+        data: i.data
+      }
+    })
+
+    chart = hc.chart('hc', {
+      title: false,
+      series: series
+    })
   }
 }
 
 const getters = {
-  realms: (state) => state.realms.array
+  realms: (state) => state.realms.array,
+  percentiles: (state) => state.percentiles.array
 }
 
 // Create the store
-var store = new Vuex.Store({
+let store = new Vuex.Store({
   getters: getters,
   actions: actions
 })
@@ -56,6 +91,11 @@ var store = new Vuex.Store({
 store.registerModule('realms', {
   mutations: realms.mutations,
   state: realms.state
+})
+
+store.registerModule('percentiles', {
+  mutations: percentiles.mutations,
+  state: percentiles.state
 })
 
 export default store

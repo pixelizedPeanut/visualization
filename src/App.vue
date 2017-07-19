@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <div class="nav">
-      <div v-for="route in routes" @click="swap(route)">{{ route }}</div>
+      <div class="logo"></div>
+      <div v-for="route in routes" @click="swap(route)">RUM - {{ route }}</div>
     </div>
     <router-view></router-view>
   </div>
@@ -55,15 +56,14 @@ body { line-height: 1.2em; }
   height: 3rem;
   display: flex;
   flex-wrap: nowrap;
+  justify-content: space-around;
+  border-bottom: 2px solid black;
 }
 
 .nav div {
-  margin: 1rem;
+  padding: 1rem;
   height: 2rem;
-}
-
-router-view {
-  margin-top: 4rem;
+  border-right: 2px solid black;
 }
 
 .action {
@@ -79,26 +79,5 @@ router-view {
 a {
   text-decoration: none;
   color:#000;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: sans-serif;
-}
-
-h1 {
-  font-size:30px;
-  font-weight: 100;
-  line-height: 50px;
-}
-
-h4 {
-  font-size: 16px;
-  font-weight: 300;
-}
-
-h5 {
-  font-size: 13px;
-  line-height: 15px;
-  font-weight: 400;
 }
 </style>

@@ -26,6 +26,7 @@
   "homepage": "https://github.com/pixelizedPeanut/nomadwisdom#readme",
   "dependencies": {
     "d3": "^4.9.1",
+    "highcharts": "^5.0.12",
     "vue": "^2.3.3",
     "vue-router": "^2.3.1",
     "vuex": "^2.3.1"

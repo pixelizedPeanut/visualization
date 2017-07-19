@@ -1,23 +1,32 @@
 <template>
-<div>
-  Hello world
+<div id="hc">
 </div>
 </template>
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+
 export default {
   name: 'consolidatedView',
   created () {
     this.ga()
+  },
+  mounted () {
     this.setRealms()
+        .then(res => this.setPercentiles(res))
+        .then(res => this.render(res))
   },
   data () {
     return {}
   },
+  getters: {
+    ...mapGetters(['realms', 'percentiles'])
+  },
   methods: {
     ...mapActions([
       'ga',
-      'setRealms'
+      'setRealms',
+      'setPercentiles',
+      'render'
     ])
   }
 }
