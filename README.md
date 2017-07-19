@@ -1,4 +1,4 @@
-# nomadwisdom
+# Consolidated Account Data View for RUM
 
 > A Vue.js project
 
