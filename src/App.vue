@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <div class="nav">
-      <div class="logo"></div>
-      <div v-for="route in routes" @click="swap(route)">RUM - {{ route }}</div>
+      <img src="./assets/logo.gif" />
+      <div v-for="route in routes">RUM - {{ route }}</div>
     </div>
     <router-view></router-view>
   </div>
@@ -78,6 +78,6 @@ body { line-height: 1.2em; }
 
 a {
   text-decoration: none;
-  color:#000;
+  color: black;
 }
 </style>

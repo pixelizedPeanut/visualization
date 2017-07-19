@@ -14,13 +14,6 @@ let realms = arrayStore('realms')
 let percentiles = arrayStore('percentiles')
 let chart
 
-function setRealms (commit) {
-  return realmsGenerator.get().then(res => {
-    commit(realms.types.SET, res)
-    return res
-  })
-}
-
 const actions = {
   /*eslint-disable*/
   ga () {
@@ -34,11 +27,11 @@ const actions = {
   },
   /*eslint-enble*/
   /**
-   * Request feeds and set the store
+   * Requests and set the store
    * @return {Promise}
    */
-  setRealms ({ commit, state }) {
-    return setRealms(commit)
+  setRealms ({ commit }) {
+    return realmsGenerator.get().then(res => commit(realms.types.SET, res))
   },
 
   setPercentiles ({ commit, state }) {
@@ -56,7 +49,6 @@ const actions = {
               data: res.chart[0].data
             })
           }
-          return res
         }
       })
     })
