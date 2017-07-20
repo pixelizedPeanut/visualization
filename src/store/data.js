@@ -1,7 +1,7 @@
 export default class Data {
   constructor (token) {
     this.rs = 'https://portal-rumlive.rum.nccgroup-webperf.com/reports/rum/1/'
-    this.token = token || 'ee14c81dec6a30968a9ed14ad57199c4f9d69988188191632a83f7ca2fb8'
+    this.token = token || 'd4bb950684c518eae69705ef75f3b9b2549e46c502cd8128fed5437070d5'
   }
 
   get (realm, endpoint, filters) {

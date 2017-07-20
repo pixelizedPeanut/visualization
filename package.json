@@ -1,7 +1,7 @@
 {
   "name": "nomadwisdom",
   "version": "1.0.0",
-  "description": "Fun project",
+  "description": "Hackaton project",
   "author": "pixelizedPeanut",
   "private": true,
   "scripts": {
@@ -14,18 +14,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pixelizedPeanut/nomadwisdom.git"
+    "url": "git+https://github.com/pixelizedPeanut/visualization.git"
   },
   "keywords": [
     "science"
   ],
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/pixelizedPeanut/nomadwisdom/issues"
+    "url": "https://github.com/pixelizedPeanut/visualization/issues"
   },
-  "homepage": "https://github.com/pixelizedPeanut/nomadwisdom#readme",
+  "homepage": "https://github.com/pixelizedPeanut/visualization#readme",
   "dependencies": {
-    "d3": "^4.9.1",
     "highcharts": "^5.0.12",
     "vue": "^2.3.3",
     "vue-router": "^2.3.1",

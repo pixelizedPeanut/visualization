@@ -2,7 +2,11 @@
   <div id="app">
     <div class="nav">
       <img src="./assets/logo.gif" />
-      <div v-for="route in routes">RUM - {{ route }}</div>
+      <div>
+        <input type="date" v-model="dateStart"/>
+        <input type="date" v-model="dateEnd"/>
+        <button type="button" name="button" @click="apply()">Apply</button>
+      </div>
     </div>
     <router-view></router-view>
   </div>
@@ -17,18 +21,25 @@ export default {
   },
   data () {
     return {
-      routes: [
-        'consolidated'
-      ]
+      dateStart: new Date(new Date().getTime() - 3 * 24 * 3600 * 1000).toISOString('').match(/(.+)T/)[1],
+      dateEnd: new Date().toISOString('').match(/(.+)T/)[1]
     }
   },
   methods: {
-    swap (link) {
-      this.$router.push(link)
-    },
     ...mapActions([
-      'ga'
-    ])
+      'ga',
+      'updateDate',
+      'setRealms',
+      'setPercentiles',
+      'setMetrics',
+      'render',
+      'renderRevenue'
+    ]),
+    apply () {
+      // this.updateDate(this.dateStart, this.dateEnd)
+      // this.setPercentiles(this.dateStart, this.dateEnd).then(() => this.render())
+      // this.setMetrics(this.dateStart, this.dateEnd).then(() => this.renderRevenue())
+    }
   }
 }
 </script>
@@ -49,6 +60,8 @@ body { line-height: 1.2em; }
 }
 
 .nav {
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.8);
   position: fixed;
   top: 0;
   left: 0;

@@ -1,6 +1,12 @@
 <template>
-<div id="hc">
-</div>
+  <div>
+    <div id="hc">
+    </div>
+    <div id="hc2">
+    </div>
+    <div id="hc3">
+    </div>
+  </div>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
@@ -12,8 +18,14 @@ export default {
   },
   mounted () {
     this.setRealms()
-        .then(res => this.setPercentiles(res))
-        .then(res => this.render(res))
+        .then(res => {
+          this.setPercentiles(res)
+          return this.setMetrics(res)
+        })
+        .then(res => {
+          this.render(res)
+          this.renderRevenue(res)
+        })
   },
   data () {
     return {}
@@ -26,7 +38,9 @@ export default {
       'ga',
       'setRealms',
       'setPercentiles',
-      'render'
+      'setMetrics',
+      'render',
+      'renderRevenue'
     ])
   }
 }
