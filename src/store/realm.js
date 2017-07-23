@@ -1,7 +1,13 @@
+// refactor classes to extand a main fetch
 export default class Realms {
   constructor (token) {
+    if (!token) {
+      console.info('redirect to login page')
+    }
+
+    // move this url in a app constants object
     this.url = 'https://portal-rumlive.rum.nccgroup-webperf.com/authorisation/user?service=8&u=cb86b7590b'
-    this.token = token || 'd4bb950684c518eae69705ef75f3b9b2549e46c502cd8128fed5437070d5'
+    this.token = token
   }
 
   get () {
@@ -11,12 +17,14 @@ export default class Realms {
       headers: new Headers({
         Authorization: `Bearer ${this.token}`
       })
-    }).then(response => response.json()).then(res => res.realms).then(res => {
-      return Object.keys(res).reduce((ac, key, i) => {
-        ac[i] = res[key]
-        ac[i].realm = key
-        return ac
-      }, [])
-    })
+    }).then(response => response.json())
+      .then(res => res.realms)
+      .then(res => {
+        return Object.keys(res).reduce((ac, key, i) => {
+          ac[i] = res[key]
+          ac[i].realm = key
+          return ac
+        }, [])
+      })
   }
 }

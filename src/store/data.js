@@ -1,20 +1,28 @@
+// refactor classes to extand a main fetch
 export default class Data {
   constructor (token) {
+    if (!token) {
+      console.info('redirect to login page')
+    }
+
+    // move this url in a app constants object
     this.rs = 'https://portal-rumlive.rum.nccgroup-webperf.com/reports/rum/1/'
-    this.token = token || 'd4bb950684c518eae69705ef75f3b9b2549e46c502cd8128fed5437070d5'
+    this.token = token
   }
 
-  get (realm, endpoint, filters) {
+  get (realm, endpoint, date, filters) {
     if (!realm) {
       throw new TypeError('No realm provided 💣')
     }
 
+    date = date || this.last7Days()
+
     endpoint = endpoint || 'loadspeedpercentile'
     filters = filters || {
-      interval: '1800',
+      interval: '3600',
       navtiming: 'lnd',
       percentile: '50',
-      period: `${Math.floor(new Date().getTime() / 1000 - 230000)}_${Math.floor(new Date().getTime() / 1000)}`
+      period: date
     }
 
     const payload = {
@@ -26,11 +34,18 @@ export default class Data {
       })
     }
 
+    // needs refactoring () => (ac+='hello'), all the rest
     let requestUrl = Object.keys(filters).reduce((ac, filterName) => {
       ac += `${filterName}=${filters[filterName]}&`
       return ac
     }, this.rs + endpoint + '?')
 
     return window.fetch(requestUrl, payload).then(response => response.json())
+  }
+
+  last7Days () {
+    const before = parseInt(new Date().getTime() / 1000 - (7 * 24 * 3600), 10)
+    const now = parseInt(new Date().getTime() / 1000, 10)
+    return `${before}_${now}`
   }
 }

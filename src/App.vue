@@ -5,7 +5,9 @@
       <div>
         <input type="date" v-model="dateStart"/>
         <input type="date" v-model="dateEnd"/>
-        <button type="button" name="button" @click="apply()">Apply</button>
+        <button v-if="enabled" type="button" name="button" @click="apply()">
+          Apply
+        </button>
       </div>
     </div>
     <router-view></router-view>
@@ -21,24 +23,42 @@ export default {
   },
   data () {
     return {
-      dateStart: new Date(new Date().getTime() - 3 * 24 * 3600 * 1000).toISOString('').match(/(.+)T/)[1],
-      dateEnd: new Date().toISOString('').match(/(.+)T/)[1]
+      loading: false,
+      dateStart: new Date(new Date()
+                   .getTime() - 3 * 24 * 3600 * 1000)
+                   .toISOString('')
+                   .match(/(.+)T/)[1],
+      dateEnd: new Date()
+                 .toISOString('')
+                 .match(/(.+)T/)[1]
     }
   },
   methods: {
     ...mapActions([
       'ga',
-      'updateDate',
-      'setRealms',
-      'setPercentiles',
-      'setMetrics',
-      'render',
-      'renderRevenue'
+      'resetStore'
     ]),
     apply () {
-      // this.updateDate(this.dateStart, this.dateEnd)
-      // this.setPercentiles(this.dateStart, this.dateEnd).then(() => this.render())
-      // this.setMetrics(this.dateStart, this.dateEnd).then(() => this.renderRevenue())
+      this.resetStore()
+      this.loading = true
+      const start = parseInt(new Date(this.dateStart) / 1000, 10)
+      const end = parseInt(new Date(this.dateEnd) / 1000, 10)
+      this.$router.push({
+        name: 'C-RUM',
+        params: {
+          date: `${start}_${end}`
+        }
+      })
+    }
+  },
+  computed: {
+    enabled () {
+      return !this.loading
+    }
+  },
+  $on: {
+    isLoading (a) {
+      this.loading = a
     }
   }
 }
@@ -77,16 +97,6 @@ body { line-height: 1.2em; }
   padding: 1rem;
   height: 2rem;
   border-right: 2px solid black;
-}
-
-.action {
-  cursor: pointer;
-  letter-spacing: 5px;
-}
-
-.action:hover {
-  padding-left: 5px;
-  letter-spacing: 10px;
 }
 
 a {

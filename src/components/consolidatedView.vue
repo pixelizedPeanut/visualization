@@ -12,23 +12,33 @@
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: 'consolidatedView',
+  name: 'C-RUM',
   created () {
     this.ga()
   },
+  props: ['date'],
   mounted () {
-    this.setRealms()
-        .then(res => {
-          this.setPercentiles(res)
-          return this.setMetrics(res)
-        })
-        .then(res => {
-          this.render(res)
-          this.renderRevenue(res)
-        })
+    this.setRealms().then(() => {
+      this.setMetrics()
+      return this.setPercentiles()
+    }).then(() => {
+      this.renderLsp()
+      this.renderRevenue()
+      this.renderConversion()
+    })
   },
   data () {
     return {}
+  },
+  watch: {
+    date () {
+      console.log('date has changed')
+      this.setPercentiles(this.date).then(() => this.renderLsp())
+      this.setMetrics(this.date).then(() => {
+        this.renderConversion()
+        this.renderRevenue()
+      })
+    }
   },
   getters: {
     ...mapGetters(['realms', 'percentiles'])
@@ -39,9 +49,32 @@ export default {
       'setRealms',
       'setPercentiles',
       'setMetrics',
-      'render',
-      'renderRevenue'
-    ])
+      'render'
+    ]),
+    renderLsp () {
+      this.render({
+        id: 'hc',
+        store: 'percentiles',
+        title: 'Page load time',
+        label: 's'
+      })
+    },
+    renderConversion () {
+      this.render({
+        id: 'hc3',
+        store: 'conversion',
+        title: 'Conversion',
+        label: ''
+      })
+    },
+    renderRevenue () {
+      this.render({
+        id: 'hc2',
+        store: 'revenue',
+        title: 'Revenue',
+        label: 'k'
+      })
+    }
   }
 }
 </script>
