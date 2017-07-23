@@ -5,7 +5,7 @@
       <div>
         <input type="date" v-model="dateStart"/>
         <input type="date" v-model="dateEnd"/>
-        <button v-if="page.apply" type="button" name="button" @click="apply()">
+        <button v-if="pages().apply" type="button" name="button" @click="apply()">
           Apply
         </button>
       </div>
@@ -23,13 +23,8 @@ export default {
   },
   data () {
     return {
-      dateStart: new Date(new Date()
-                   .getTime() - 3 * 24 * 3600 * 1000)
-                   .toISOString('')
-                   .match(/(.+)T/)[1],
-      dateEnd: new Date()
-                 .toISOString('')
-                 .match(/(.+)T/)[1]
+      dateStart: this.pages().dateStart,
+      dateEnd: this.pages().dateEnd
     }
   },
   methods: {
@@ -38,7 +33,7 @@ export default {
       'resetStore',
       'setPageProp'
     ]),
-    ...mapGetters(['page']),
+    ...mapGetters(['pages']),
     dateFormatter (date) {
       date = date < this.last30Days ? this.last30Days : date
       return parseInt(date / 1000, 10)

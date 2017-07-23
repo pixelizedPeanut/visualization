@@ -23,7 +23,7 @@ const CONFIG = {
   apply: false
 }
 
-const page = treeStore('page', CONFIG)
+const pages = treeStore('pages', CONFIG)
 
 const realms = arrayStore('realms')
 const percentiles = arrayStore('percentiles')
@@ -74,7 +74,7 @@ const actions = {
   /*eslint-enble*/
 
   setPageProp ({ commit }, propArray) {
-    commit(page.types.SET_KEY, propArray)
+    commit(pages.types.SET_KEY, propArray)
   },
   /**
    * Requests and set the store
@@ -97,7 +97,7 @@ const actions = {
             data: parsePlt(res)
           }])
           if (i === state.realms.array.length - 1) {
-            commit(page.types.SET_KEY, ['apply', true])
+            commit(pages.types.SET_KEY, ['apply', true])
           }
 
           // hc won't catch data changes, we must add it manually
@@ -178,7 +178,7 @@ function isMissguided (conf) {
 }
 
 const getters = {
-  page: (state) => state.page.tree,
+  pages: (state) => state.pages.tree,
   realms: (state) => state.realms.array,
   percentiles: (state) => state.percentiles.array,
   revenue: (state) => state.revenue.array,
@@ -191,9 +191,9 @@ let store = new Vuex.Store({
   actions: actions
 })
 
-store.registerModule('page', {
-  mutations: page.mutations,
-  state: page.state
+store.registerModule('pages', {
+  mutations: pages.mutations,
+  state: pages.state
 })
 
 store.registerModule('realms', {
