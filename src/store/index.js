@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import Data from './data'
 import Realms from './realm'
 import arrayStore from './array'
+import treeStore from './tree'
 // import Chart from './hc'
 import hc from 'highcharts'
 
@@ -12,10 +13,22 @@ const TOKEN = 'c924b652e25324988dbfdabcb34b3ac81c8b329c9d035bb8ed9fceae89ba'
 let realmsGenerator = new Realms(TOKEN)
 let data = new Data(TOKEN)
 
-let realms = arrayStore('realms')
-let percentiles = arrayStore('percentiles')
-let revenue = arrayStore('revenue')
-let conversion = arrayStore('conversion')
+const CONFIG = {
+  dateStart: new Date(new Date().getTime() - 3 * 24 * 3600 * 1000)
+               .toISOString('')
+               .match(/(.+)T/)[1],
+  dateEnd: new Date()
+             .toISOString('')
+             .match(/(.+)T/)[1],
+  apply: false
+}
+
+const page = treeStore('page', CONFIG)
+
+const realms = arrayStore('realms')
+const percentiles = arrayStore('percentiles')
+const revenue = arrayStore('revenue')
+const conversion = arrayStore('conversion')
 let charts = {}
 
 let chartDefault = {
@@ -59,6 +72,10 @@ const actions = {
     ga('send', 'pageview');
   },
   /*eslint-enble*/
+
+  setPageProp ({ commit }, propArray) {
+    commit(page.types.SET_KEY, propArray)
+  },
   /**
    * Requests and set the store
    * @return {Promise}
@@ -71,7 +88,7 @@ const actions = {
 
   // change to draw percentiles and pass chart in
   setPercentiles ({ commit, state }, date) {
-    return state.realms.array.map((r) => {
+    return state.realms.array.map((r, i) => {
       return data.get(r.realm, 'loadspeedpercentile', date).then(res => {
         if (res.chart[0]) {
           commit(percentiles.types.ADD, [{
@@ -79,6 +96,9 @@ const actions = {
             label: r.label,
             data: parsePlt(res)
           }])
+          if (i === state.realms.array.length - 1) {
+            commit(page.types.SET_KEY, ['apply', true])
+          }
 
           // hc won't catch data changes, we must add it manually
           addSeries('hc', r.label, parsePlt(res))
@@ -158,6 +178,7 @@ function isMissguided (conf) {
 }
 
 const getters = {
+  page: (state) => state.page.tree,
   realms: (state) => state.realms.array,
   percentiles: (state) => state.percentiles.array,
   revenue: (state) => state.revenue.array,
@@ -168,6 +189,11 @@ const getters = {
 let store = new Vuex.Store({
   getters: getters,
   actions: actions
+})
+
+store.registerModule('page', {
+  mutations: page.mutations,
+  state: page.state
 })
 
 store.registerModule('realms', {

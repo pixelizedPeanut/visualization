@@ -10,7 +10,6 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
-
 export default {
   name: 'C-RUM',
   created () {
@@ -19,12 +18,12 @@ export default {
   props: ['date'],
   mounted () {
     this.setRealms().then(() => {
-      this.setMetrics()
-      return this.setPercentiles()
+      this.setMetrics(this.date)
+      this.setPercentiles(this.date)
     }).then(() => {
-      this.renderLsp()
       this.renderRevenue()
       this.renderConversion()
+      this.renderLsp()
     })
   },
   data () {
@@ -32,7 +31,6 @@ export default {
   },
   watch: {
     date () {
-      console.log('date has changed')
       this.setPercentiles(this.date).then(() => this.renderLsp())
       this.setMetrics(this.date).then(() => {
         this.renderConversion()
@@ -41,7 +39,7 @@ export default {
     }
   },
   getters: {
-    ...mapGetters(['realms', 'percentiles'])
+    ...mapGetters(['realms'])
   },
   methods: {
     ...mapActions([

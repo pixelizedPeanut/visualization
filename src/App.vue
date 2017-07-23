@@ -5,7 +5,7 @@
       <div>
         <input type="date" v-model="dateStart"/>
         <input type="date" v-model="dateEnd"/>
-        <button v-if="enabled" type="button" name="button" @click="apply()">
+        <button v-if="page.apply" type="button" name="button" @click="apply()">
           Apply
         </button>
       </div>
@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'app',
   created () {
@@ -23,7 +23,6 @@ export default {
   },
   data () {
     return {
-      loading: false,
       dateStart: new Date(new Date()
                    .getTime() - 3 * 24 * 3600 * 1000)
                    .toISOString('')
@@ -36,13 +35,19 @@ export default {
   methods: {
     ...mapActions([
       'ga',
-      'resetStore'
+      'resetStore',
+      'setPageProp'
     ]),
+    ...mapGetters(['page']),
+    dateFormatter (date) {
+      date = date < this.last30Days ? this.last30Days : date
+      return parseInt(date / 1000, 10)
+    },
     apply () {
       this.resetStore()
-      this.loading = true
-      const start = parseInt(new Date(this.dateStart) / 1000, 10)
-      const end = parseInt(new Date(this.dateEnd) / 1000, 10)
+      this.setPageProp(['apply', false])
+      const start = this.dateFormatter(new Date(this.dateStart).getTime())
+      const end = this.dateFormatter(new Date(this.dateEnd).getTime())
       this.$router.push({
         name: 'C-RUM',
         params: {
@@ -52,13 +57,8 @@ export default {
     }
   },
   computed: {
-    enabled () {
-      return !this.loading
-    }
-  },
-  $on: {
-    isLoading (a) {
-      this.loading = a
+    last30Days () {
+      return new Date().getTime() - 30 * 24 * 3600 * 1000
     }
   }
 }
