@@ -28,12 +28,12 @@ export default {
     }
   },
   methods: {
+    ...mapGetters(['pages']),
     ...mapActions([
       'ga',
       'resetStore',
       'setPageProp'
     ]),
-    ...mapGetters(['pages']),
     dateFormatter (date) {
       date = date < this.last30Days ? this.last30Days : date
       return parseInt(date / 1000, 10)
@@ -52,6 +52,7 @@ export default {
     }
   },
   computed: {
+    // ...mapGetters(['pages']),
     last30Days () {
       return new Date().getTime() - 30 * 24 * 3600 * 1000
     }
