@@ -1,3 +1,5 @@
+import { last7Days } from './utils'
+
 // refactor classes to extand a main fetch
 export default class Data {
   constructor (token) {
@@ -15,7 +17,7 @@ export default class Data {
       throw new TypeError('No realm provided 💣')
     }
 
-    date = date || this.last7Days()
+    date = date || last7Days()
 
     endpoint = endpoint || 'loadspeedpercentile'
     filters = filters || {
@@ -41,11 +43,5 @@ export default class Data {
     }, this.rs + endpoint + '?')
 
     return window.fetch(requestUrl, payload).then(response => response.json())
-  }
-
-  last7Days () {
-    const before = parseInt(new Date().getTime() / 1000 - (7 * 24 * 3600), 10)
-    const now = parseInt(new Date().getTime() / 1000, 10)
-    return `${before}_${now}`
   }
 }

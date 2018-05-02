@@ -11,11 +11,23 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 export default {
+  data () {
+    return {}
+  },
   name: 'C-RUM',
+  props: ['date'],
+  watch: {
+    date () {
+      this.setPercentiles(this.date).then(() => this.renderLsp())
+      this.setMetrics(this.date).then(() => {
+        this.renderConversion()
+        this.renderRevenue()
+      })
+    }
+  },
   created () {
     this.ga()
   },
-  props: ['date'],
   mounted () {
     this.setRealms().then(() => {
       this.setMetrics(this.date)
@@ -25,18 +37,6 @@ export default {
       this.renderConversion()
       this.renderLsp()
     })
-  },
-  data () {
-    return {}
-  },
-  watch: {
-    date () {
-      this.setPercentiles(this.date).then(() => this.renderLsp())
-      this.setMetrics(this.date).then(() => {
-        this.renderConversion()
-        this.renderRevenue()
-      })
-    }
   },
   getters: {
     ...mapGetters(['realms'])

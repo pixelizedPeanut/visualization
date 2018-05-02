@@ -3,16 +3,16 @@ export default function create (namespace, initial = {}) {
     throw new TypeError('No namespace provided for the tree-store 💣')
   }
 
-  let types = {
+  const types = {
     SET: `${namespace}:SET`,
     SET_KEY: `${namespace}:SET_KEY`
   }
 
-  let state = {
+  const state = {
     tree: initial
   }
 
-  let mutations = {
+  const mutations = {
     [types.SET] (state, tree) {
       state.tree = tree
     },
@@ -21,7 +21,7 @@ export default function create (namespace, initial = {}) {
     }
   }
 
-  let getters = {
+  const getters = {
     [namespace]: state => state.tree
   }
 

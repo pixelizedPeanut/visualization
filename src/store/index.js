@@ -7,9 +7,16 @@ import treeStore from './tree'
 // import Chart from './hc'
 import hc from 'highcharts'
 
+import {
+  parseConversions,
+  parseRevenue,
+  parsePlt,
+  endpointValidator
+} from './utils'
+
 Vue.use(Vuex)
 
-const TOKEN = 'f61d6799a629d3ba1903afeb8c0b97e251f503f237d2a8ab9633d84a50e9'
+const TOKEN = '7d7c8f7cac8229e2e8eb79d3f0814c721e99a5a515bd8f13e36dd4cef810'
 let realmsGenerator = new Realms(TOKEN)
 let data = new Data(TOKEN)
 
@@ -23,12 +30,19 @@ const CONFIG = {
   apply: false
 }
 
-const pages = treeStore('pages', CONFIG)
+const GRAPHS = {
+  percentiles: {},
+  revenue: {},
+  conversion: {}
+}
 
+const pages = treeStore('pages', CONFIG)
 const realms = arrayStore('realms')
-const percentiles = arrayStore('percentiles')
-const revenue = arrayStore('revenue')
-const conversion = arrayStore('conversion')
+
+Object.keys(GRAPHS).map(g => {
+  GRAPHS[g] = arrayStore(g)
+})
+
 let charts = {}
 
 let chartDefault = {
@@ -91,7 +105,7 @@ const actions = {
     return state.realms.array.map((r, i) => {
       return data.get(r.realm, 'loadspeedpercentile', date).then(res => {
         if (res.chart[0]) {
-          commit(percentiles.types.ADD, [{
+          commit(GRAPHS.percentiles.types.ADD, [{
             realm: r.realm,
             label: r.label,
             data: parsePlt(res)
@@ -111,13 +125,13 @@ const actions = {
     return state.realms.array.map((r) => {
       return data.get(r.realm, 'conversionmetricsbytime', date).then(res => {
         if (endpointValidator('conversionmetricsbytime', res)) {
-          commit(revenue.types.ADD, [{
+          commit(GRAPHS.revenue.types.ADD, [{
             realm: r.realm,
             label: r.label,
             data: parseRevenue(res)
           }])
 
-          commit(conversion.types.ADD, [{
+          commit(GRAPHS.conversion.types.ADD, [{
             realm: r.realm,
             label: r.label,
             data: parseConversions(res)
@@ -158,12 +172,13 @@ const actions = {
   },
 
   resetStore ({ commit }) {
-    commit(conversion.types.SET, [])
-    commit(revenue.types.SET, [])
-    commit(percentiles.types.SET, [])
+    Object.keys(GRAPHS).map(g => {
+      commit(GRAPHS[g].types.SET, [])
+    })
   }
 }
 
+// TODO move to chart helpers
 function addSeries (id, label, data) {
   if (charts[id]) {
     charts[id].addSeries({
@@ -173,6 +188,7 @@ function addSeries (id, label, data) {
   }
 }
 
+// TODO move to user model
 function isMissguided (conf) {
   return conf.customer === '363' || conf.customer === '861'
 }
@@ -201,42 +217,11 @@ store.registerModule('realms', {
   state: realms.state
 })
 
-store.registerModule('percentiles', {
-  mutations: percentiles.mutations,
-  state: percentiles.state
-})
-
-store.registerModule('revenue', {
-  mutations: revenue.mutations,
-  state: revenue.state
-})
-
-store.registerModule('conversion', {
-  mutations: conversion.mutations,
-  state: conversion.state
+Object.keys(GRAPHS).map(g => {
+  store.registerModule(g, {
+    mutations: GRAPHS[g].mutations,
+    state: GRAPHS[g].state
+  })
 })
 
 export default store
-
-// to be moved somewhere else e.g api utils
-function parseConversions (data) {
-  return data.results.map(r => ([r.key, r.conversion]))
-}
-
-function parseRevenue (data) {
-  return data.results.map(r => ([r.key, parseInt(r.revenuegbp / 100000, 10)]))
-}
-
-function parsePlt (data) {
-  return data.chart[0].data.map(r => ([r.x, r.y]))
-}
-
-function endpointValidator (url, data) {
-  switch (url) {
-    case 'conversionmetricsbytime':
-      return data.results.length > 0
-
-    case 'loadspeedpercentile':
-      return data.chart[0]
-  }
-}
