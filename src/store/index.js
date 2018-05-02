@@ -9,7 +9,7 @@ import hc from 'highcharts'
 
 Vue.use(Vuex)
 
-const TOKEN = 'c924b652e25324988dbfdabcb34b3ac81c8b329c9d035bb8ed9fceae89ba'
+const TOKEN = 'f61d6799a629d3ba1903afeb8c0b97e251f503f237d2a8ab9633d84a50e9'
 let realmsGenerator = new Realms(TOKEN)
 let data = new Data(TOKEN)
 

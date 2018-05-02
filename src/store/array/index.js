@@ -3,17 +3,17 @@ export default function create (namespace, initial = []) {
     throw new TypeError('No namespace provided for the array-store 💣')
   }
 
-  var types = {
+  let types = {
     SET: `${namespace}:SET`,
     ADD: `${namespace}:ADD`,
     REPLACE: `${namespace}:REPLACE`
   }
 
-  var state = {
+  let state = {
     array: initial
   }
 
-  var mutations = {
+  let mutations = {
     [types.SET] (state, array) {
       state.array = [...array]
     },
@@ -25,7 +25,7 @@ export default function create (namespace, initial = []) {
     }
   }
 
-  var getters = {
+  let getters = {
     [namespace]: state => state.array
   }
 
